@@ -33,19 +33,14 @@ void listenCommand()
   if(Serial.available())
   {
     String command = Serial.readStringUntil('\r\n');
+    //Set like this: Time=19:45:15
     if(command.indexOf("Time=")>=0)
     {
       offsetHours = (int) command.substring(5,7).toInt();
       offsetMinutes = (int) command.substring(8,10).toInt();
       offsetSeconds = (int) command.substring(11,13).toInt();
-      Serial.print("Hours set to: ");Serial.println(offsetHours);
-      Serial.print("Minutes set to: ");Serial.println(offsetMinutes);
-      Serial.print("Seconds set to: ");Serial.println(offsetSeconds);
-
       offsetInput = (unsigned long)((offsetHours * 3600) + (offsetMinutes * 60) + (offsetSeconds)) * 1000;
       offsetNow = millis();
-      Serial.print("OffsetInput: ");Serial.println(offsetInput);
-      Serial.print("OffsetNow: ");Serial.println(offsetNow);
     }
   }
 }
@@ -54,10 +49,8 @@ void updateClock()
 {
   unsigned long now = millis();
   unsigned long offset = (unsigned long) (now - offsetNow);
-  Serial.print("Offset: ");Serial.println(offset);
   now = (unsigned long) (offsetInput + offset);
-  Serial.print("now: ");Serial.println(now);
-  
+
   float inputDays = (float) now / 1000.0;
   float fDays = (float) inputDays / 86400.0; //4102.626
   days = floor(fDays); //4102
@@ -71,7 +64,7 @@ void updateClock()
   minutes = floor(fMinutes);
 
   float inputSeconds = (float) inputMinutes - (minutes * 60.0);
-  seconds = floor(inputSeconds);
+  seconds = round(inputSeconds);
 
   Serial.print("DateTime:");
   Serial.print(days);
